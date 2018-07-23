@@ -60,32 +60,11 @@ class NineAnime(BaseAnime):
     @classmethod
     def search(cls, query):
         r = requests.get('https://www4.9anime.is/search?',
-                         params={'keyword': query})
+                         params={'keyword': query}, headers=desktop_headers)
 
         logging.debug(r.url)
 
         soup = BeautifulSoup(r.text, 'html.parser')
-
-        # 9anime has search result in
-        # <div class="item">
-        #   <div class="inner">
-        #    <a href="https://www4.9anime.is/watch/dragon-ball-super.7jly"
-        #       class="poster tooltipstered" data-tip="ajax/film/tooltip/7jly?5827f020">
-        #       <img src="http://static.akacdn.ru/static/images/2018/03/43012fe439631a2cecfcf248841e15f7.jpg"
-        #            alt="Dragon Ball Super">
-        #       <div class="status">
-        #           <span class="bar">
-        #           </span>
-        #           <div class="ep"> Ep 131/131 </div>
-        #       </div>
-        #     </a>
-        #    <a href="https://www4.9anime.is/watch/dragon-ball-super.7jly"
-        #      data-jtitle="Dragon Ball Super"
-        #      class="name">
-        #           Dragon Ball Super
-        #    </a>
-        #   </div>
-        # </div>
 
         search_results = soup.find(
             'div', {'class': 'film-list'}).find_all('div', {'class': 'item'})
@@ -181,11 +160,11 @@ def a_old(t, e):
 
 def generate_(data, DD=None):
     if DD is None:
-        DD = "ab031348"
+        DD = "0a9de5a4"
     param_ = s(DD)
 
     for key, value in data.items():
-        if DD == "ab031348":
+        if DD == "0a9de5a4":
             trans = a(DD + key, str(value))
         else:
             trans = a_old(DD + key, str(value))

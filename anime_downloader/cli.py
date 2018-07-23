@@ -5,7 +5,6 @@ import os
 import logging
 
 from anime_downloader.sites import get_anime_class
-from anime_downloader.sites.exceptions import NotFoundError
 from anime_downloader.players.mpv import mpv
 from anime_downloader.__version__ import __version__
 
@@ -62,7 +61,7 @@ def cli():
 @click.option(
     '--provider',
     help='The anime provider (website) for search.',
-    type=click.Choice(['9anime', 'kissanime'])
+    type=click.Choice(['9anime', 'kissanime', 'twist.moe'])
 )
 @click.option(
     '--external-downloader', '-xd',
@@ -89,7 +88,10 @@ def dl(ctx, anime_url, episode_range, url, player, skip_download, quality,
     try:
         anime = cls(anime_url, quality=quality)
     except Exception as e:
-        echo(click.style(str(e), fg='red'))
+        if log_level != 'DEBUG':
+            echo(click.style(str(e), fg='red'))
+        else:
+            raise
         return
 
     # TODO: Refractor this somewhere else. (util?)
@@ -274,7 +276,8 @@ def list_animes(watcher, quality, download_dir):
                 inp = inp.split('download ')[1]
             except IndexError:
                 inp = ':'
-            inp = str(anime.episodes_done+1)+inp if inp.startswith(':') else inp
+            inp = str(anime.episodes_done+1) + \
+                inp if inp.startswith(':') else inp
             inp = inp+str(len(anime)) if inp.endswith(':') else inp
 
             anime = util.split_anime(anime, inp)
